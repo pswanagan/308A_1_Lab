@@ -66,35 +66,45 @@ console.log(flattenedArray);
 
 // Part Three - Deferred Execution
 
+// Cache the HTML element
+const primeContainer = document.getElementById('primeContainer');
+
+// Function to check if a number is prime
 function isPrime(num) {
     for (let i = 2; i <= Math.sqrt(num); i++) {
-        if (num % i === 0) return false;
+        if (num % i === 0) {
+            return false;
+        }
     }
     return num > 1;
 }
 
-/* The function will calculate prime numbers up to n, update the HTML element, and use setTimeout to manage the execution flow.*/
-const primeContainer = document.getElementById('primeNumbers');
+// Function to add prime numbers to the HTML element in chunks
+function addPrimes(n) {
+    let current = 2;
 
-function displayPrimes(n) {
-    
-    primeContainer.innerHTML = 'Calculating...';
-
-    let currentNumber = 2;
-
-    function updatePrimes() {
-        if (currentNumber <= n) {
-            if (isPrime(currentNumber)) {
-                primeContainer.innerHTML += `${currentNumber}, `;
+    function processChunk() {
+        let chunkEnd = current + 100; // Process 100 numbers at a time, adjust as needed
+        while (current <= n && current < chunkEnd) {
+            if (isPrime(current)) {
+                const node = document.createElement("div");
+                node.textContent = current;
+                primeContainer.appendChild(node);
             }
-            currentNumber++;
-            setTimeout(updatePrimes, 0); // Schedule the next call
+            current++;
+        }
+
+        if (current <= n) {
+            // Use setTimeout to break into next event loop iteration
+            setTimeout(processChunk, 0);
         } else {
+            // Alert the user when done
             alert('Calculation finished!');
         }
     }
 
-    updatePrimes();
+    processChunk();
 }
 
-displayPrimes(10000);
+// Run the function with n = 10000
+addPrimes(10000);
